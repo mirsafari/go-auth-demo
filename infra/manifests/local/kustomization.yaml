@@ -1,0 +1,7 @@
+resources:
+  - ../base/keycloak-operator/
+  - ../base/cloudnative-pg/
+  - ../base/ingress-nginx/
+  - ../base/cert-manager/
+  - ./postgress.yaml
+  - ./keycloak.yaml

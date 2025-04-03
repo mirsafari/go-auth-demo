@@ -1,0 +1,100 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./namespace.yaml
+  - https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.1.4/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+  - https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.1.4/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+  - https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.1.4/kubernetes/kubernetes.yml
+  - ./rolebinding.yaml
+ 
+patches:
+  # Set namespace to keycloak on RoleBinding resources
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: keycloak
+
+  # Set namespace to keycloak on Role resources
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: keycloak
+
+  # Convert Keycloak Operator role to cluster role
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: Role
+      name: keycloak-operator-role
+    patch: |-
+      - op: replace
+        path: /kind
+        value: ClusterRole
+
+  # Change Keycloak Operator role reference to cluster role reference
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+      name: keycloak-operator-role-binding
+    patch: |-
+      - op: replace
+        path: /roleRef/kind
+        value: ClusterRole
+
+  # Set namespace to keycloak-operator on Keycloak Operator RoleBinding
+  # This is required to override the previous patch for RoleBinding namespace.
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+      name: keycloak-operator-role-binding
+      namespace: keycloak-operator
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: keycloak-operator
+
+  # Set Keycloak Operator reconciler to watch only keycloak namespace
+  # and set tolerations/node affinity to enforce it to run on system nodes
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: keycloak-operator
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: keycloak-operator
+      spec:
+        template:
+          spec:
+            containers:
+              - name: keycloak-operator
+                env:
+                  - name: QUARKUS_OPERATOR_SDK_NAMESPACES
+                    value: keycloak
+                  - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_KEYCLOAKCONTROLLER_NAMESPACES
+                    value: keycloak
+                  - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_KEYCLOAKREALMIMPORTCONTROLLER_NAMESPACES
+                    value: keycloak
+transformers:
+  # All resources that aren't patched with namespace will be created on keycloak-operator namespace.
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: notUsed
+      namespace: keycloak-operator
+    unsetOnly: true
+    setRoleBindingSubjects: allServiceAccounts

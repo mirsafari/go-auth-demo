@@ -1,0 +1,100 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: idp
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: local-ca-selfsigned
+  namespace: keycloak
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak-https
+  namespace: keycloak
+spec:
+  isCA: true
+  commonName: keycloak.127.0.0.1.nip.io
+  dnsNames:
+    - keycloak.127.0.0.1.nip.io
+  secretName: keycloak-https-certificate
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: local-ca-selfsigned
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: local-dev
+  namespace: keycloak
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: idp
+spec:
+  instances: 1
+  startOptimized: false
+  image: keycloak/keycloak:26.1
+  hostname:
+    hostname: keycloak.127.0.0.1.nip.io
+  http:
+    tlsSecret: keycloak-https-certificate
+  ingress:
+    enabled: false # Standalone ingress resource is created
+  db:
+    vendor: postgres
+    usernameSecret:
+      name: keycloak-db-app
+      key: user
+    passwordSecret:
+      name: keycloak-db-app
+      key: password
+    host: keycloak-db-rw
+    database: app
+  bootstrapAdmin:
+    user:
+      secret: keycloak-admin-credentials
+  proxy:
+    headers: xforwarded
+  resources:
+    limits:
+      memory: 1500Mi
+    requests:
+      cpu: 500m
+      memory: 1500Mi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-nip-io
+  namespace: keycloak
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: keycloak.127.0.0.1.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: local-dev-service
+            port:
+              name: https
+  tls:
+  - hosts:
+      - keycloak.127.0.0.1.nip.io
+    secretName: keycloak-https-certificate # Reuse Keycloak certificate
