@@ -62,9 +62,6 @@ spec:
       key: password
     host: keycloak-db-rw
     database: app
-  bootstrapAdmin:
-    user:
-      secret: keycloak-admin-credentials
   proxy:
     headers: xforwarded
   resources:

@@ -5,6 +5,7 @@ let
 in
 
 {
+  dotenv.enable = true;
   # https://devenv.sh/basics/
   env.GREET = "devenv";
 
