@@ -90,10 +90,15 @@ remove-selfsigned-ca-to-truststore:
 
 [group('Setup')]
 [doc('Exposes Ingress controller locally')]
-expose-services-tmux: add-selfsigned-ca-to-truststore
+expose-services-tmux: && add-selfsigned-ca-to-truststore get-keycloak-admin-credentials
+  tmux new-window "echo 'Enter sudo password to tunnel connections to cluster' && minikube tunnel"
+
+[group('Setup')]
+[doc('Get Keycloak admin credentials')]
+get-keycloak-admin-credentials:
+  kubectl config current-context | grep "minikube" || kubectl config set-context minikube
   kubectl wait -n keycloak --for=create secret/local-dev-initial-admin --timeout=180s
   @echo "Connect to Keycloak on: "
   @echo "URL: ${KEYCLOAK_DOMAIN}"
   @echo "User: $(kubectl get secrets -n keycloak local-dev-initial-admin -o jsonpath='{.data.username}' | base64 -d)"
   @echo "Pass: $(kubectl get secrets -n keycloak local-dev-initial-admin -o jsonpath='{.data.password}' | base64 -d)"
-  tmux new-window "echo 'Enter sudo password to tunnel connections to cluster' && minikube tunnel"

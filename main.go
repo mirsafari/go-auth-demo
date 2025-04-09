@@ -9,13 +9,14 @@ import (
 	"github.com/mirsafari/oauth-keycloak-go/internal/auth"
 	"github.com/mirsafari/oauth-keycloak-go/internal/config"
 	"github.com/mirsafari/oauth-keycloak-go/internal/handlers"
+	mymiddleware "github.com/mirsafari/oauth-keycloak-go/internal/middleware"
 )
 
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	sessionStore := auth.NewCookieStore(auth.SessionOptions{
+	sessionStore := auth.NewMemoryStore(auth.SessionOptions{
 		SessionKey: config.EnVars.SESSION_KEY,
 		MaxAge:     config.EnVars.SESSION_MAX_AGE,
 		HttpOnly:   config.EnVars.SESSION_JS_ACCESS,
@@ -34,14 +35,15 @@ func main() {
 	r.Get("/auth/{provider}", h.HandleProviderLogin)
 	r.Get("/auth/{provider}/callback", h.HandleAuthCallback)
 	r.Get("/auth/logout/{provider}", h.HandleProviderLogout)
-	r.Get("/auth/login", h.HandleLogin)
+	r.Get("/login", h.LoginPage)
 
 	r.Get("/projects", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("this is protected route visible only to logged in users"))
 	})
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
+	r.Route("/", func(r chi.Router) {
+		r.Use(mymiddleware.RequireAuth(authService))
+		r.Get("/", h.Dashboard)
 	})
 
 	http.ListenAndServe(fmt.Sprintf(":%s", fmt.Sprintf("%d", config.EnVars.HTTP_PORT)), r)
