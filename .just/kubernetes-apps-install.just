@@ -7,24 +7,24 @@ configure-kubectl-context:
 [doc('Deploys Keycloak Operator, Ingress controller, CloudNativePG and Cert-Manager cluster')]
 install-k8s-platform-services: configure-kubectl-context
   (r=5;while ! kubectl apply --server-side -k ./infra/manifests/local/platform-services; do ((--r))||exit;echo "Waiting for admission to start. Retrying in 60s ..." && sleep 60;done)
-  echo "✅ Instalation succesfully finished"
+  @echo "✅ Instalation succesfully finished"
 
 [group('Kubernetes platform applications')]
 [doc('Deploys PostgreSQL database, Keycloak and ClusterIssuer')]
 install-k8s-application-dependencies: configure-kubectl-context
   (r=3;while ! kubectl apply --server-side -k ./infra/manifests/local/application-dependencies; do ((--r))||exit;echo "Waiting for apps to start. Retrying in 30s ..." && sleep 30;done)
-  echo "✅ Instalation succesfully finished"
+  @echo "✅ Instalation succesfully finished"
 
 [group('Application setup')]
 [doc('Configure Keycloak')]
 configure-keycloak:
-  echo "Checking if Keycloak is up and running Terraform"
+  @echo "Checking if Keycloak is up and running Terraform"
   kubectl -n keycloak get pod local-dev-0 -o jsonpath='{.status.phase}' | grep Running
   curl -s -f -LI https://keycloak.127.0.0.1.nip.io/admin/master/console/ | grep 200
 
   test -d ./infra/keycloak-config/.terraform || tofu -chdir=./infra/keycloak-config init -upgrade
   tofu -chdir=./infra/keycloak-config apply -auto-approve
-  echo "✅ Keycloak succesfully configured"
+  @echo "✅ Keycloak succesfully configured"
 
 
 [group('Application setup')]
@@ -55,4 +55,4 @@ prepare-application-manifests: configure-kubectl-context
 [doc('Deploys application to Kubernetes cluster')]
 install-application-to-k8s: configure-kubectl-context
   (r=3;while ! kubectl apply --server-side -k ./infra/manifests/local/application; do ((--r))||exit;echo "Waiting for apps to start. Retrying in 30s ..." && sleep 30;done)
-  echo "✅ Instalation succesfully finished"
+  @echo "✅ Instalation succesfully finished"

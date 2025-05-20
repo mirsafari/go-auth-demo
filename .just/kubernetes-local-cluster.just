@@ -5,13 +5,13 @@ export MEMORY_MB := "3072"
 [group('Kubernetes Setup')]
 [doc('Starts Podman machine')]
 start-podman:
-  echo "Creating podman machine ..."
+  @echo "Creating podman machine ..."
   podman machine list --format "{{{{.Name}}" | grep -q "^podman-machine-default\*$" || podman machine init --cpus ${CPUS} --memory ${MEMORY_MB};
 
-  echo "Starting podman machine ..."
+  @echo "Starting podman machine ..."
   podman machine list | grep "Currently running" || podman machine start
 
-  echo "✅ Podman succesfully started"
+  @echo "✅ Podman succesfully started"
 
 [group('Kubernetes Setup')]
 [doc('Start local K8S cluster using Minikube')]
@@ -26,7 +26,7 @@ start-k8s: start-podman
   kubectl config current-context | grep "minikube" || kubectl config set-context minikube
   kubectl cluster-info | grep 127.0.0.1
 
-  echo "✅ Minikube succesfully started"
+  @echo "✅ Minikube succesfully started"
 
 # Pause
 [group('Kubernetes Pause')]
@@ -37,7 +37,7 @@ stop-k8s:
 [group('Kubernetes Pause')]
 [doc('Stops Podman machine but doesn not delete it')]
 stop-podman: stop-k8s
-  echo "Stopping podman machine"
+  @echo "Stopping podman machine"
   podman machine stop
 
 # Deletion
@@ -49,6 +49,6 @@ delete-k8s:
 [group('Kubernetes Cleanup')]
 [doc('Removes Podman machine')]
 delete-podman-machine: delete-k8s
-  echo "Stopping podman machine"
+  @echo "Stopping podman machine"
   podman machine rm podman-machine-default -f
 

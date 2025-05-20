@@ -64,6 +64,6 @@ expose-services-tmux: add-selfsigned-ca-to-truststore
 get-keycloak-admin-credentials: configure-kubectl-context
   kubectl wait -n keycloak --for=create secret/keycloak-boostrap-admin-credentials --timeout=180s
   @echo "Connect to Keycloak on: "
-  @echo "URL: ${KEYCLOAK_DOMAIN}"
+  @echo "URL: $(kubectl -n keycloak get ingress keycloak-nip-io -o jsonpath='{.spec.rules[0].host}')"
   @echo "User: $(kubectl get secrets -n keycloak keycloak-boostrap-admin-credentials -o jsonpath='{.data.username}' | base64 -d)"
   @echo "Pass: $(kubectl get secrets -n keycloak keycloak-boostrap-admin-credentials -o jsonpath='{.data.password}' | base64 -d)"

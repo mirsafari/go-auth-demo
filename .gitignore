@@ -18,5 +18,6 @@ tmp/
 *templ.go
 
 # Local development generated file
-./infra/manifests/local/application/*.tmpl
+infra/manifests/local/application/kustomization.yaml
+infra/manifests/local/application/my-app-secrets.yaml
 
