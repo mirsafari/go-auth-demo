@@ -20,6 +20,7 @@ in
     pkgs-unstable.tailwindcss_4
     pkgs.air
     pkgs.opentofu
+    pkgs.jq
   ];
 
   languages.go.enable = true;

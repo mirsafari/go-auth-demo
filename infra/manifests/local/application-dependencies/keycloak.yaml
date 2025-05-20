@@ -24,7 +24,7 @@ kind: Certificate
 metadata:
   name: keycloak-https
 spec:
-  isCA: true
+  isCA: false 
   commonName: keycloak.127.0.0.1.nip.io
   dnsNames:
     - keycloak.127.0.0.1.nip.io

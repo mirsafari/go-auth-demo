@@ -11,6 +11,8 @@ start-podman:
   echo "Starting podman machine ..."
   podman machine list | grep "Currently running" || podman machine start
 
+  echo "✅ Podman succesfully started"
+
 [group('Kubernetes Setup')]
 [doc('Start local K8S cluster using Minikube')]
 start-k8s: start-podman
@@ -23,6 +25,8 @@ start-k8s: start-podman
   @echo "Ensuring kube-context is configured ..."
   kubectl config current-context | grep "minikube" || kubectl config set-context minikube
   kubectl cluster-info | grep 127.0.0.1
+
+  echo "✅ Minikube succesfully started"
 
 # Pause
 [group('Kubernetes Pause')]
