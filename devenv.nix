@@ -19,6 +19,7 @@ in
     pkgs.kubectl
     pkgs-unstable.tailwindcss_4
     pkgs.air
+    pkgs.opentofu
   ];
 
   languages.go.enable = true;

@@ -8,10 +8,9 @@ metadata:
     app.kubernetes.io/component: idp
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: local-ca-selfsigned
-  namespace: keycloak
 spec:
   selfSigned: {}
 ---
@@ -31,7 +30,7 @@ spec:
     size: 256
   issuerRef:
     name: local-ca-selfsigned
-    kind: Issuer
+    kind: ClusterIssuer
     group: cert-manager.io
 ---
 apiVersion: k8s.keycloak.org/v2alpha1

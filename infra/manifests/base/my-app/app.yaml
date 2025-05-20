@@ -9,20 +9,6 @@ metadata:
   name: my-app
 automountServiceAccountToken: false
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: base-app
-    app.kubernetes.io/part-of: my-app
-    app.kubernetes.io/name: my-app
-  name: my-app-oauth-secrets
-type: Opaque
-data:
-  cookie-secret: "WFhYWFhYWFhYWFhYWFhYWA=="
-  client-secret: "WFhYWFhYWFg="
-  client-id: "WFhYWFhYWA=="
----
 # Source: oauth2-proxy/templates/service.yaml
 apiVersion: v1
 kind: Service
@@ -75,7 +61,15 @@ spec:
       serviceAccountName: my-app
       enableServiceLinks: false # Disable service discovery using ENV variabels
       automountServiceAccountToken: false
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: my-app-oauth-secrets
       containers:
+      - name: my-app
+        image: my-app:v0.0.1
+        imagePullPolicy: IfNotPresent
+
       - name: oauth2-proxy
         image: "quay.io/oauth2-proxy/oauth2-proxy:v7.9.0"
         imagePullPolicy: IfNotPresent
@@ -83,6 +77,10 @@ spec:
           - --http-address=0.0.0.0:4180
           - --https-address=0.0.0.0:4443
           - --metrics-address=0.0.0.0:44180
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: "/etc/secret-volume"
         env:
           - name: OAUTH2_PROXY_CLIENT_ID
             valueFrom:
@@ -99,6 +97,24 @@ spec:
               secretKeyRef:
                 name: my-app-oauth-secrets 
                 key: cookie-secret
+          - name: OAUTH2_PROXY_PROVIDER
+            value: "keycloak-oidc"
+          - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+            value: https://keycloak.127.0.0.1.nip.io/realms/local-development
+          - name: OAUTH2_PROXY_REDIRECT_URL
+            value: https://my-app.127.0.0.1.nip.io/oauth2/callback
+          - name: OAUTH2_PROXY_EMAIL_DOMAINS
+            value: "*"
+          - name: OATUH2_PROXY_UPSTREAMS
+            value: http://localhost:1407
+          - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
+            value: "GET=^/api/health"
+          - name: OAUTH2_PROXY_SILENCE_PING_LOGGING
+            value: "true"
+          - name: OAUTH2_PROXY_PROVIDER_CA_FILES
+            value: "/etc/secret-volume/oidc-provider-ca.pem"
+          - name: OAUTH2_PROXY_CODE_CHALLENGE_METHOD
+            value: "S256"
         ports:
           - containerPort: 4180
             name: http
@@ -111,8 +127,9 @@ spec:
             path: /ping
             port: http
             scheme: HTTP
-          initialDelaySeconds: 0
-          timeoutSeconds: 1
+          initialDelaySeconds: 60
+          timeoutSeconds: 10
+          successThreshold: 1
         readinessProbe:
           httpGet:
             path: /ready
@@ -134,3 +151,29 @@ spec:
           runAsUser: 2000
           seccompProfile:
             type: RuntimeDefault
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myapp-nip-io
+  namespace: my-app 
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/cluster-issuer: local-ca-selfsigned
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: my-app.127.0.0.1.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-app
+            port:
+              name: http
+  tls:
+  - hosts:
+      - my-app.127.0.0.1.nip.io
+    secretName: myapp-https-certificate

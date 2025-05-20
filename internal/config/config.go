@@ -7,35 +7,19 @@ import (
 )
 
 type Config struct {
-	HTTP_PORT          int
-	OIDC_ENDPOINT      string
-	OIDC_CLIENT_ID     string
-	OIDC_CLIENT_SECRET string
-	OIDC_DISCOVERY_URL string
-	OIDC_CALLBACK_URL  string
-	SESSION_KEY        string
-	SESSION_MAX_AGE    int
-	SESSION_JS_ACCESS  bool // Prevent JavaScript access
-	SESSION_OVER_HTTPS bool // True for sites served over HTTPS
+	HTTP_PORT      int
+	LISTEN_ADDRESS string
 }
 
 var EnVars = initConfig()
 var defaultApplicationPort = 1407
+var defaultListenAddress = "127.0.0.1"
 var sessionMaxAgeSeconds int = 3600 // 1 day
 
 func initConfig() Config {
 	return Config{
-		HTTP_PORT: getEnvInt("PORT", defaultApplicationPort),
-
-		OIDC_ENDPOINT:      getEnvStringRequired("OIDC_ENDPOINT"),
-		OIDC_CLIENT_ID:     getEnvStringRequired("OIDC_CLIENT_ID"),
-		OIDC_CLIENT_SECRET: getEnvStringRequired("OIDC_CLIENT_SECRET"),
-		OIDC_DISCOVERY_URL: getEnvStringRequired("OIDC_DISCOVERY_URL"),
-		OIDC_CALLBACK_URL:  getEnvStringRequired("OIDC_CALLBACK_URL"),
-		SESSION_KEY:        getEnvStringRequired("SESSION_KEY"),
-		SESSION_MAX_AGE:    getEnvInt("SESSION_MAX_AGE", sessionMaxAgeSeconds),
-		SESSION_JS_ACCESS:  getEnvBool("SESSION_JS_ACCESS", false),
-		SESSION_OVER_HTTPS: getEnvBool("SESSION_OVER_HTTPS", true),
+		HTTP_PORT:      getEnvInt("PORT", defaultApplicationPort),
+		LISTEN_ADDRESS: getEnvString("LISTEN_ADDRESS", defaultListenAddress),
 	}
 }
 

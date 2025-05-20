@@ -3,3 +3,6 @@ kind: Kustomization
 
 resources:
   - ./app.yaml
+  - ./namespace.yaml
+
+namespace: my-app

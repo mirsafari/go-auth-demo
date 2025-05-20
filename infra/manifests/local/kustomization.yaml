@@ -3,6 +3,27 @@ resources:
   - ../base/cloudnative-pg/
   - ../base/ingress-nginx/
   - ../base/cert-manager/
+  - ../base/my-app/
   - ./postgress.yaml
   - ./keycloak.yaml
   - ./keycloak-admin.yaml
+  - ./my-app-secrets.yaml
+
+patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: my-app
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: my-app
+      spec:
+        template:
+          spec:
+            hostAliases:
+              - ip: "_NGINX_INGRESS_LB_IP_PLACEHOLDER"
+                hostnames:
+                  - "_KEYCLOAK_DOMAIN_PLACEHOLDER"

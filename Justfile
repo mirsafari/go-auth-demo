@@ -1,3 +1,6 @@
+import '.just/collect-information-from-cluster.just'
+
+
 default:
   just --list
 
