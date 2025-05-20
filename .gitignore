@@ -16,3 +16,7 @@ terraform.tfstate*
 # Project build
 tmp/
 *templ.go
+
+# Local development generated file
+./infra/manifests/local/application/my-app-secrets.yaml
+
