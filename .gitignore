@@ -9,6 +9,10 @@ devenv.local.nix
 # pre-commit
 .pre-commit-config.yaml
 
+# Terraform state and modules
+.terraform*
+terraform.tfstate*
+
 # Project build
 tmp/
 *templ.go

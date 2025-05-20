@@ -70,6 +70,9 @@ spec:
     requests:
       cpu: 500m
       memory: 1500Mi
+  bootstrapAdmin:
+    user:
+      secret: keycloak-boostrap-admin-credentials
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

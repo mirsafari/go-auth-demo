@@ -1,12 +1,7 @@
 default:
   just --list
 
-export DEV_CLUSTER_NAME := "local-dev-cluster"
-export KEYCLOAK_OPERATOR_VERSION := "26.1.4"
-export KEYCLOAK_OPERATOR_NAMESPACE := "keycloak-operator"
 export KEYCLOAK_DOMAIN := "keycloak.127.0.0.1.nip.io"
-export CLOUDNATIVE_PG_VERSION :="1.25.1"
-export INGRESS_VERSION := "v1.12.1"
 export CPUS := "4"
 export MEMORY_MB := "3072"
 
@@ -97,8 +92,8 @@ expose-services-tmux: && add-selfsigned-ca-to-truststore get-keycloak-admin-cred
 [doc('Get Keycloak admin credentials')]
 get-keycloak-admin-credentials:
   kubectl config current-context | grep "minikube" || kubectl config set-context minikube
-  kubectl wait -n keycloak --for=create secret/local-dev-initial-admin --timeout=180s
+  kubectl wait -n keycloak --for=create secret/keycloak-boostrap-admin-credentials --timeout=180s
   @echo "Connect to Keycloak on: "
   @echo "URL: ${KEYCLOAK_DOMAIN}"
-  @echo "User: $(kubectl get secrets -n keycloak local-dev-initial-admin -o jsonpath='{.data.username}' | base64 -d)"
-  @echo "Pass: $(kubectl get secrets -n keycloak local-dev-initial-admin -o jsonpath='{.data.password}' | base64 -d)"
+  @echo "User: $(kubectl get secrets -n keycloak keycloak-boostrap-admin-credentials -o jsonpath='{.data.username}' | base64 -d)"
+  @echo "Pass: $(kubectl get secrets -n keycloak keycloak-boostrap-admin-credentials -o jsonpath='{.data.password}' | base64 -d)"
