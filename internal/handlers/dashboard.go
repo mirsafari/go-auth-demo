@@ -3,9 +3,17 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/mirsafari/oauth-keycloak-go/internal/models"
 	"github.com/mirsafari/oauth-keycloak-go/internal/web/views"
 )
 
 func GetDashboard(w http.ResponseWriter, r *http.Request) {
-	views.Homepage().Render(r.Context(), w)
+
+	user, ok := r.Context().Value(models.UserContextKey).(*models.User)
+	if !ok {
+		http.Error(w, "forbidden - H", http.StatusForbidden)
+		return
+	}
+
+	views.Homepage(user).Render(r.Context(), w)
 }

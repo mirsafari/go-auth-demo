@@ -61,7 +61,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: my-app
-        image: my-app:v0.0.1
+        image: my-app:v0.0.4
         imagePullPolicy: IfNotPresent
 
       - name: oauth2-proxy

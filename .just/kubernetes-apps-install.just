@@ -53,6 +53,6 @@ prepare-application-manifests: configure-kubectl-context
 
 [group('Application setup')]
 [doc('Deploys application to Kubernetes cluster')]
-install-application-to-k8s: configure-kubectl-context
+install-application-to-k8s: prepare-application-manifests
   (r=3;while ! kubectl apply --server-side -k ./infra/manifests/local/application; do ((--r))||exit;echo "Waiting for apps to start. Retrying in 30s ..." && sleep 30;done)
   @echo "✅ Instalation succesfully finished"

@@ -1,12 +1,24 @@
 package views
 
-templ Homepage() {
+import (
+	"github.com/mirsafari/oauth-keycloak-go/internal/models"
+	"fmt"
+)
+
+templ Homepage(user *models.User) {
 	<html>
 		<body>
 			<ul>
 				<li>Hi</li>
-				<li>Authenticated</li>
+				<li>Authenticated user</li>
 			</ul>
+			Name: { user.PreferredUsername }
+			Email: { user.Email }
+			ID: { user.UserExternalID }
+			Roles: { fmt.Sprintf("%t",user.Roles.Has("account:view-profile")) }
+			if user.Roles.Has("offline_access") {
+				<strong>I am Admin </strong>
+			}
 		</body>
 	</html>
 }
