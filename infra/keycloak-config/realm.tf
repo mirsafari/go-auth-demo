@@ -8,6 +8,8 @@ resource "keycloak_realm" "realm" {
 
   access_code_lifespan = "1h"
 
+  verify_email = false
+
   ssl_required    = "all"
   password_policy = "upperCase(1) and length(8) and forceExpiredPasswordChange(365) and notUsername"
 

@@ -60,8 +60,8 @@ patches:
                   value: https://my-app.127.0.0.1.nip.io/oauth2/callback
                 - name: OAUTH2_PROXY_EMAIL_DOMAINS
                   value: "*"
-                - name: OATUH2_PROXY_UPSTREAMS
-                  value: http://localhost:1407
+                - name: OAUTH2_PROXY_UPSTREAMS
+                  value: "http://127.0.0.1:1407/"
                 - name: OAUTH2_PROXY_SKIP_AUTH_ROUTES
                   value: "GET=^/api/health"
                 - name: OAUTH2_PROXY_SILENCE_PING_LOGGING

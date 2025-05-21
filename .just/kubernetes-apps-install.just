@@ -35,8 +35,8 @@ prepare-application-manifests: configure-kubectl-context
   INGRESS_LB_SVC_IP=$(kubectl -n ingress-nginx get services ingress-nginx-controller -o jsonpath='{.spec.clusterIP}')
   OIDC_PROVIDER_URL=$(kubectl -n keycloak get ingress keycloak-nip-io -o jsonpath='{.spec.rules[0].host}')
 
-  OIDC_CLIENT_ID=$(tofu -chdir=./infra/keycloak-config output oidc_client_id | tr -d '"' | base64)
-  OIDC_CLIENT_SECRET=$(tofu -chdir=./infra/keycloak-config output oidc_client_secret | tr -d '"' | base64 )
+  OIDC_CLIENT_ID=$(tofu -chdir=./infra/keycloak-config output oidc_client_id | tr -d '"' | tr -d '[:space:]' | base64)
+  OIDC_CLIENT_SECRET=$(tofu -chdir=./infra/keycloak-config output oidc_client_secret | tr -d '"' | tr -d '[:space:]' | base64 )
   OIDC_PROVIDER_CA=$(kubectl -n keycloak get secrets keycloak-https-certificate -o jsonpath='{.data.ca\.crt}')
 
   cp ./infra/manifests/local/application/my-app-secrets.yaml.tmpl ./infra/manifests/local/application/my-app-secrets.yaml

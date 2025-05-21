@@ -3,9 +3,10 @@ resource "keycloak_user" "bob" {
   username = "bob@domain.com"
   enabled  = true
 
-  first_name = "Bob"
-  last_name  = "Bobson"
-  email      = "bob@domain.com"
+  first_name     = "Bob"
+  last_name      = "Bobson"
+  email          = "bob@domain.com"
+  email_verified = true
 
   initial_password {
     value     = "Password123"

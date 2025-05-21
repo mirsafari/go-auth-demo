@@ -114,6 +114,10 @@ metadata:
   name: myapp-nip-io
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/client-header-buffer-size: 100k
+    nginx.ingress.kubernetes.io/large-client-header-buffers: "4 100k"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "32k"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
     cert-manager.io/cluster-issuer: local-ca-selfsigned
 spec:
   ingressClassName: nginx
