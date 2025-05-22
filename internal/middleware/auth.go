@@ -8,6 +8,10 @@ import (
 	"github.com/mirsafari/oauth-keycloak-go/internal/models"
 )
 
+type contextKey string
+
+const UserContextKey contextKey = "authenticatedUser"
+
 func StoreUserInfoToContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -26,7 +30,7 @@ func StoreUserInfoToContext(next http.Handler) http.Handler {
 
 		user.Roles = parseRoles(rawRoles)
 
-		ctx := context.WithValue(r.Context(), models.UserContextKey, user)
+		ctx := context.WithValue(r.Context(), UserContextKey, user)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

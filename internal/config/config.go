@@ -41,7 +41,7 @@ func getEnvInt(envName string, defaultValue int) int {
 		if err != nil {
 			return val
 		}
-		fmt.Printf("Invalid value for %s. Defaulting to %d", envName, defaultValue)
+		fmt.Printf("Invalid value for %s. Defaulting to %d\n", envName, defaultValue)
 	}
 
 	return defaultValue

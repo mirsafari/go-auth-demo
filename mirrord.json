@@ -1,0 +1,19 @@
+{
+  "target": {
+    "path": "deployment/my-app/container/my-app",
+    "namespace": "my-app"
+  },
+  "agent": {
+    "namespace": "my-app",
+    "ephemeral": false
+  },
+  "feature": {
+    "network": {
+      "incoming": {
+        "mode": "steal"
+      }
+    }
+  },
+  "telemetry": false,
+  "kube_context": "minikube"
+}

@@ -11,13 +11,13 @@ templ Homepage(user *models.User) {
 			<ul>
 				<li>Hi</li>
 				<li>Authenticated user</li>
+				<li>Name: { user.PreferredUsername }</li>
+				<li>Email: { user.Email }</li>
+				<li>ID: { user.UserExternalID }</li>
+				<li>Roles: { fmt.Sprintf("%t",user.Roles.Has("account:view-profile")) }</li>
 			</ul>
-			Name: { user.PreferredUsername }
-			Email: { user.Email }
-			ID: { user.UserExternalID }
-			Roles: { fmt.Sprintf("%t",user.Roles.Has("account:view-profile")) }
 			if user.Roles.Has("offline_access") {
-				<strong>I am Admin </strong>
+				<strong><i>I am Admin using working mirrod with cleanup !!!!</i></strong>
 			}
 		</body>
 	</html>

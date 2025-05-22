@@ -21,6 +21,7 @@ in
     pkgs.air
     pkgs.opentofu
     pkgs.jq
+    pkgs.fswatch
   ];
 
   languages.go.enable = true;

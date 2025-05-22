@@ -21,6 +21,6 @@ func main() {
 
 	r.Get("/", handlers.GetDashboard)
 
-	fmt.Println("Started webserver on " + config.EnVars.LISTEN_ADDRESS + ":" + fmt.Sprintf("%d", config.EnVars.HTTP_PORT))
+	fmt.Println("Starting webserver: " + config.EnVars.LISTEN_ADDRESS + ":" + fmt.Sprintf("%d", config.EnVars.HTTP_PORT))
 	http.ListenAndServe(fmt.Sprintf("%s:%d", config.EnVars.LISTEN_ADDRESS, config.EnVars.HTTP_PORT), r)
 }

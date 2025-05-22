@@ -21,3 +21,6 @@ Use `just` to see a list of available commands
 @TODO: SQLITE for session store or custom memroy store (cookiestore not OK due to limit of 4KB in size)
 @TODO: RBAC - how to extract roles from token?
 @TODO: Realm export to have users and secrets pre-configured
+
+
+Run `modprobe iptable-nat` in Podman ssh
