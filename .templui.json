@@ -1,0 +1,6 @@
+{
+  "componentsDir": "internal/web/components",
+  "utilsDir": "internal/web/utils",
+  "moduleName": "github.com/mirsafari/oauth-keycloak-go",
+  "jsDir": "assets/js"
+}

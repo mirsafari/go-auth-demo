@@ -30,6 +30,7 @@ fswatch -r -b --no-defer \
     --exclude ".*_templ\.go$" \
     --exclude ".*~$" \
     --exclude ".*/4913$" \
+    --exclude ".*\.devenv.*" \
     --latency 2.0 \
     "$WATCH_DIR" | while read file; do
 

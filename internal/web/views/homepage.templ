@@ -2,10 +2,14 @@ package views
 
 import (
 	"github.com/mirsafari/oauth-keycloak-go/internal/models"
+	"github.com/mirsafari/oauth-keycloak-go/internal/web/components/accordion"
+	"github.com/mirsafari/oauth-keycloak-go/internal/web/components/avatar"
+	"github.com/mirsafari/oauth-keycloak-go/internal/web/components/code"
+	"github.com/mirsafari/oauth-keycloak-go/internal/web/components/tabs"
 	"fmt"
 )
 
-templ Homepage(user *models.User) {
+templ Homepage(user *models.TenantUser) {
 	<html>
 		<body>
 			<ul>
@@ -13,12 +17,79 @@ templ Homepage(user *models.User) {
 				<li>Authenticated user</li>
 				<li>Name: { user.PreferredUsername }</li>
 				<li>Email: { user.Email }</li>
-				<li>ID: { user.UserExternalID }</li>
+				<li>ID: { user.ExternalID }</li>
 				<li>Roles: { fmt.Sprintf("%t",user.Roles.Has("account:view-profile")) }</li>
 			</ul>
 			if user.Roles.Has("offline_access") {
 				<strong><i>I am Admin using working mirrod with cleanup !!!!</i></strong>
 			}
+		</body>
+	</html>
+}
+
+templ TenantsDashboard(user *models.TenantUser) {
+	<html>
+		<head>
+			<link rel="stylesheet" href="/assets/css/output.css" media="screen"/>
+			<script src="/assets/js/templui.min.js"></script>
+			@avatar.Script()
+			@code.Script()
+			@tabs.Script()
+		</head>
+		<body class="flex flex-row min-h-screen">
+			<div class="flex-none w-1/8 bg-base-200">
+				<p class="text-red-100">Test tailwind</p>
+			</div>
+			<div class="flex-grow mt-10">
+				<div>
+					@avatar.Avatar() {
+						@avatar.Fallback() {
+							{ avatar.Initials("John Doe") }
+						}
+					}
+					Name: { user.PreferredUsername }
+					ID: { user.ExternalID }
+				</div>
+				<div class="w-full max-w-sm">
+					@accordion.Accordion(accordion.Props{
+						Class: "w-full",
+					}) {
+						@accordion.Item() {
+							@accordion.Trigger() {
+								Is it accessible?
+							}
+							@accordion.Content() {
+								Yes. It adheres to the WAI-ARIA design pattern.
+							}
+						}
+						@accordion.Item() {
+							@accordion.Trigger() {
+								Is it styled?
+							}
+							@accordion.Content() {
+								Yes. It comes with default styles that matches the other components aesthetic.
+							}
+						}
+						@accordion.Item() {
+							@accordion.Trigger() {
+								Is it animated?
+							}
+							@accordion.Content() {
+								Yes. It is animated by default, but you can disable it if you prefer.
+							}
+						}
+					}
+				</div>
+				<div class="w-full max-w-md">
+					@code.Code(code.Props{
+						Language:       "go",
+						ShowCopyButton: true,
+					}) {
+						{ `fmt.Println("Hello, World!")` }
+					}
+				</div>
+			</div>
+			<div class="flex-none w-1/4"></div>
 		</body>
 	</html>
 }

@@ -15,15 +15,15 @@ const UserContextKey contextKey = "authenticatedUser"
 func StoreUserInfoToContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		user := &models.User{
+		user := &models.TenantUser{
 			PreferredUsername: r.Header.Get("X-Forwarded-Preferred-Username"),
 			Email:             r.Header.Get("X-Forwarded-Email"),
-			UserExternalID:    r.Header.Get("X-Forwarded-User"),
+			ExternalID:        r.Header.Get("X-Forwarded-User"),
 		}
 
 		rawRoles := r.Header.Get("X-Forwarded-Groups")
 
-		if rawRoles == "" || user.PreferredUsername == "" || user.Email == "" || user.UserExternalID == "" {
+		if rawRoles == "" || user.PreferredUsername == "" || user.Email == "" || user.ExternalID == "" {
 			http.Error(w, "forbidden - M", http.StatusForbidden)
 			return
 		}
